@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Valentine cho Hoài Thương</title>
+
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: "Segoe UI", sans-serif;
+      background: linear-gradient(135deg, #fff0f5, #ffe4ec);
+      overflow: hidden;
+      color: #ff4d88;
+    }
+
+    .screen {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 24px;
+    }
+
+    .card {
+      background: white;
+      padding: 28px;
+      border-radius: 24px;
+      box-shadow: 0 15px 40px rgba(0,0,0,0.12);
+      max-width: 460px;
+      width: 100%;
+      animation: fadeIn 0.8s ease;
+    }
+
+    h1, h2, p { margin: 12px 0; }
+
+    .subtitle {
+      font-size: 18px;
+      font-weight: bold;
+      color: #ff6b9a;
+    }
+
+    input {
+      padding: 12px;
+      border-radius: 12px;
+      border: 1px solid #ddd;
+      width: 80%;
+      font-size: 16px;
+    }
+
+    button {
+      margin-top: 16px;
+      padding: 12px 22px;
+      border: none;
+      border-radius: 14px;
+      background: #ff6b9a;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    button:hover { transform: scale(1.05); }
+
+    .hidden { display: none; }
+
+    img.slide {
+      width: 100%;
+      border-radius: 18px;
+      margin-top: 14px;
+      height: 320px;
+      object-fit: cover;
+      animation: fadeIn 1s ease;
+    }
+
+    .text {
+      font-size: 17px;
+      margin-top: 18px;
+      min-height: 80px;
+      font-weight: 600;
+      line-height: 1.5;
+      white-space: pre-line;
+    }
+
+    .timer {
+      margin-top: 12px;
+      font-size: 15px;
+      color: #ff6b9a;
+      font-weight: bold;
+    }
+
+    .hearts {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .heart {
+      position: absolute;
+      bottom: -40px;
+      font-size: 18px;
+      animation: floatUp linear forwards;
+    }
+
+    @keyframes floatUp {
+      to {
+        transform: translateY(-110vh);
+        opacity: 0;
+      }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- LOCK SCREEN -->
+  <div class="screen" id="lockScreen">
+    <div class="card">
+      <h2>Nhập mật mã tình yêu 💗</h2>
+      <p>Ngày sinh nhật của em</p>
+      <input type="password" id="password" placeholder="0703" />
+      <br />
+      <button onclick="unlock()">Mở khóa</button>
+    </div>
+  </div>
+
+  <!-- MAIN SCREEN -->
+  <div class="screen hidden" id="mainScreen">
+    <div class="card">
+      <div class="subtitle">Chúc mừng Valentine 💝</div>
+      <h1>Hoài Thương 💖</h1>
+
+      <img id="slide" class="slide" src="image1.jpg" />
+
+      <div class="text" id="message"></div>
+
+      <div class="timer" id="timer"></div>
+
+      <button id="nextBtn" onclick="nextStep()">Tiếp tục 💌</button>
+    </div>
+  </div>
+
+  <!-- HEART EFFECT -->
+  <div class="hearts" id="hearts"></div>
+
+  <!-- MUSIC -->
+  <audio id="music" src="music.mp3" loop></audio>
+
+  <script>
+    const PASSWORD = "0703";
+
+    const messages = [
+`Chúc mừng ngày valentine
+Tớ có đôi lời nhắn nhủ với bạn`,
+
+`Hy vọng nhiều năm sau nữa,
+tớ và bạn vẫn cùng nhau nắm tay
+đi qua tất cả thăng trầm của cuộc sống.`,
+
+`Cảm ơn vì chúng ta đã gặp được nhau.
+Vì yêu mà đến, vì thương mà ở lại,
+vì hiểu nhau và nhường nhịn nhau đến hiện tại.`,
+
+`Chúc tớ và bạn luôn vui vẻ và hạnh phúc
+sớm được gần nhau hơn ạ 💗`
+    ];
+
+    const images = [
+      "image1.jpg","image2.jpg","image3.jpg","image4.jpg","image5.jpg",
+      "image6.jpg","image7.jpg","image8.jpg"
+    ];
+
+    let step = 0;
+
+    // Ngày bắt đầu yêu đã cập nhật theo bạn cung cấp
+    const startDate = new Date("2025-12-03T00:00:00");
+
+    function unlock() {
+      const input = document.getElementById("password").value;
+      if (input === PASSWORD) {
+        document.getElementById("lockScreen").classList.add("hidden");
+        document.getElementById("mainScreen").classList.remove("hidden");
+
+        document.getElementById("music").play().catch(()=>{});
+
+        showStep();
+        startHearts();
+        startTimer();
+      } else {
+        alert("Sai mật mã rồi 😢");
+      }
+    }
+
+    function showStep() {
+      document.getElementById("slide").src = images[step % images.length];
+      document.getElementById("message").innerText = messages[step] || "";
+
+      if (step >= messages.length - 1) {
+        document.getElementById("nextBtn").innerText = "Anh yêu em ❤️";
+      }
+    }
+
+    function nextStep() {
+      step++;
+      if (step < messages.length) showStep();
+    }
+
+    function startHearts() {
+      const container = document.getElementById("hearts");
+      setInterval(() => {
+        const heart = document.createElement("div");
+        heart.className = "heart";
+        heart.style.left = Math.random() * 100 + "vw";
+        heart.style.animationDuration = 4 + Math.random() * 4 + "s";
+        heart.innerText = "💗";
+        container.appendChild(heart);
+        setTimeout(() => heart.remove(), 8000);
+      }, 400);
+    }
+
+    function startTimer() {
+      const el = document.getElementById("timer");
+      setInterval(() => {
+        const now = new Date();
+        const diff = now - startDate;
+
+        const days = Math.floor(diff / (1000*60*60*24));
+        const hours = Math.floor((diff / (1000*60*60)) % 24);
+        const mins = Math.floor((diff / (1000*60)) % 60);
+
+        el.innerText = `Chúng ta đã bên nhau ${days} ngày ${hours} giờ ${mins} phút 💞`;
+      }, 1000);
+    }
+  </script>
+
+</body>
+</html>
